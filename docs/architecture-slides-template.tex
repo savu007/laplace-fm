@@ -1,0 +1,386 @@
+% Standalone Beamer template: no external images or bibliography required.
+% Compile: pdflatex architecture-slides-template.tex (run twice).
+% Alternatively, upload this file to Overleaf and select pdfLaTeX.
+% Replace every \fillin{...} and \figureplaceholder{...}{...}.
+% Main slides form a talk outline; backup slides are an architecture checklist.
+% Keep only the slides relevant to your talk. Prompts are not scientific claims.
+% Distinguish proposed settings, implemented settings, and measured results.
+\documentclass[aspectratio=169,11pt]{beamer}
+\usepackage{amsmath,amssymb,booktabs,tabularx}
+\usetheme{default}
+\definecolor{navy}{RGB}{24,48,74}
+\definecolor{prompt}{RGB}{95,105,115}
+\setbeamercolor{structure}{fg=navy}
+\setbeamercolor{frametitle}{fg=navy}
+\setbeamercolor{block title}{fg=white,bg=navy}
+\setbeamercolor{block body}{bg=navy!5}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}[frame number]
+\setbeamertemplate{itemize items}[circle]
+\setlength{\tabcolsep}{5pt}
+\newcommand{\fillin}[1]{{\color{prompt}\textit{[Fill in: #1]}}}
+\newcommand{\figureplaceholder}[2]{%
+  \fbox{\begin{minipage}[c][#1][c]{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}
+  \centering\color{prompt}\small #2
+  \end{minipage}}}
+\newcommand{\takeaway}[1]{\begin{block}{Point to establish}#1\end{block}}
+\newcommand{\decision}[3]{%
+  \textbf{Choice:} \fillin{#1}\par\medskip
+  \textbf{Reason:} \fillin{#2}\par\medskip
+  \textbf{Cost / limitation:} \fillin{#3}}
+\title{\fillin{Project title}}
+\subtitle{Architecture, modeling choices, and evidence}
+\author{\fillin{Your name and collaborators}}
+\institute{\fillin{Institution / laboratory}}
+\date{\fillin{Presentation date and implementation version}}
+
+\begin{document}
+
+% ==================== MAIN PRESENTATION ====================
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{1. Research question and scope}
+  \begin{itemize}
+    \item \textbf{Question:} \fillin{One concrete, testable research question.}
+    \item \textbf{Input and output:} \fillin{What is supplied; what is produced?}
+    \item \textbf{Task:} \fillin{Unconditional generation, conditional generation, or forecasting?}
+    \item \textbf{Success:} \fillin{What observations would support the claim?}
+    \item \textbf{Scope boundary:} \fillin{What this experiment cannot establish.}
+  \end{itemize}
+  \takeaway{\fillin{The claim the audience should evaluate.}}
+\end{frame}
+
+\begin{frame}{2. Data and physical setting}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \begin{itemize}
+        \item \fillin{Governing system, regime, and boundary conditions.}
+        \item \fillin{Variables, units, grid, domain size, and sampling interval.}
+        \item \fillin{Files, unique snapshots, and independent realizations.}
+        \item \fillin{Split rule; temporal correlation and leakage checks.}
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \figureplaceholder{3.4cm}{DNS visualization or reference spectrum.\\Specify component, plane, units, axes, and color scale.}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{3. The complete computation}
+  \figureplaceholder{3.1cm}{Draw the data-to-output path. Label tensor shapes, normalization, learned modules, deterministic operations, random inputs, and saved artifacts.}
+  \medskip
+  \begin{itemize}
+    \item \textbf{Training:} \fillin{Which stages train together; which are frozen?}
+    \item \textbf{Inference:} \fillin{Which modules are needed to produce one output?}
+    \item \textbf{Information bottleneck:} \fillin{Where can information be lost?}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{4. Representation: encoder and decoder}
+  \small
+  \begin{tabularx}{\linewidth}{lXXX}
+    \toprule
+    Component & Input $\rightarrow$ output & Operation & Purpose \\
+    \midrule
+    Normalization & \fillin{Shape} & \fillin{Formula} & \fillin{Reason} \\
+    Encoder & \fillin{Shape} & \fillin{Layers} & \fillin{Features learned} \\
+    Latent & \fillin{Shape / count} & \fillin{Constraints} & \fillin{Compression} \\
+    Decoder & \fillin{Shape} & \fillin{Layers} & \fillin{Reconstruction} \\
+    \bottomrule
+  \end{tabularx}
+  \medskip
+  \decision{Representation and compression factor.}{Why this capacity was chosen.}{What may be irreversibly lost; how to measure it.}
+\end{frame}
+
+\begin{frame}{5. Multiscale representation}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \figureplaceholder{3.3cm}{Pyramid diagram and decomposition / reconstruction equations. Define downsampling and upsampling.}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \begin{itemize}
+        \item \fillin{Band shapes and ordering.}
+        \item \fillin{Meaning of coarse fields and residuals.}
+        \item \fillin{Exact reconstruction conditions.}
+        \item \fillin{Relationship, if any, to physical length scales.}
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{6. Tokens and information flow}
+  \small
+  \begin{tabularx}{\linewidth}{lXXX}
+    \toprule
+    Scale & Patch / token count & Accessible keys & Separate or shared weights? \\
+    \midrule
+    \fillin{Scale 1} & \fillin{Values} & \fillin{Pattern} & \fillin{Modules} \\
+    \fillin{Scale 2} & \fillin{Values} & \fillin{Pattern} & \fillin{Modules} \\
+    \fillin{Scale 3} & \fillin{Values} & \fillin{Pattern} & \fillin{Modules} \\
+    \bottomrule
+  \end{tabularx}
+  \medskip
+  \begin{itemize}
+    \item \fillin{Width, depth, head count, head dimension, MLP width, parameter count.}
+    \item \fillin{What one query selects, what values carry, and what cannot influence it.}
+    \item \fillin{Meaning of causality here: scale, physical time, or neither.}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{7. Training objectives}
+  \begin{block}{Representation objective}
+    \fillin{Equation; target; normalization; averaging dimensions; regularizers.}
+  \end{block}
+  \begin{block}{Generative objective}
+    \fillin{Equation; sampled variables; predicted quantity; loss weighting.}
+  \end{block}
+  \begin{itemize}
+    \item \fillin{Which parameters receive gradients from each objective?}
+    \item \fillin{What these losses encourage and what they do not constrain.}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{8. How a sample is produced}
+  \figureplaceholder{2.7cm}{Noise-to-sample timeline. Mark scale activation, solver intervals, and the final decoding step.}
+  \medskip
+  \begin{itemize}
+    \item \fillin{Noise law; dependence between scales; seed behavior.}
+    \item \fillin{Solver, step counts, network evaluations, and endpoint treatment.}
+    \item \fillin{What generation time means; relation to physical time, if any.}
+    \item \fillin{Where diversity enters despite deterministic network evaluation.}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{9. Choices relative to the reference method}
+  \small
+  \begin{tabularx}{\linewidth}{XXXX}
+    \toprule
+    Aspect & Reference method & Our implementation & Reason / consequence \\
+    \midrule
+    Representation & \fillin{Source} & \fillin{Choice} & \fillin{Tradeoff} \\
+    Network & \fillin{Source} & \fillin{Choice} & \fillin{Tradeoff} \\
+    Path / noise & \fillin{Source} & \fillin{Choice} & \fillin{Tradeoff} \\
+    Solver / loss & \fillin{Source} & \fillin{Choice} & \fillin{Tradeoff} \\
+    \bottomrule
+  \end{tabularx}
+  \medskip
+  \fillin{Reference citation, repository commit, and any paper/code disagreement.}
+\end{frame}
+
+\begin{frame}{10. Physical evaluation and failure diagnosis}
+  \small
+  \begin{tabularx}{\linewidth}{XXX}
+    \toprule
+    Question & Diagnostic & Interpretation / limitation \\
+    \midrule
+    Does compression retain structure? & \fillin{Reconstruction checks} & \fillin{Meaning} \\
+    Do generated statistics agree? & \fillin{Distribution checks} & \fillin{Meaning} \\
+    Are physical constraints respected? & \fillin{Residuals / invariants} & \fillin{Meaning} \\
+    Is the sample ensemble sufficient? & \fillin{Uncertainty / diversity} & \fillin{Meaning} \\
+    \bottomrule
+  \end{tabularx}
+  \medskip
+  \fillin{Paired versus unpaired comparisons; how to separate encoder and generator failures.}
+\end{frame}
+
+\begin{frame}{11. Evidence, limitations, and next decision}
+  \begin{itemize}
+    \item \textbf{Verified:} \fillin{Tests actually run; hardware, scale, and outcome.}
+    \item \textbf{Measured:} \fillin{Training/evaluation results with sample counts.}
+    \item \textbf{Not yet established:} \fillin{Open scientific and execution questions.}
+    \item \textbf{Main limitation:} \fillin{Most consequential modeling assumption.}
+    \item \textbf{Next experiment:} \fillin{One controlled change and the evidence it should produce.}
+  \end{itemize}
+  \takeaway{\fillin{Strongest statement justified by current evidence.}}
+\end{frame}
+
+% ==================== TECHNICAL BACKUP ====================
+\appendix
+
+\begin{frame}{Backup: notation and units}
+  \small
+  \begin{tabularx}{\linewidth}{lXX}
+    \toprule
+    Symbol / tensor & Definition and shape & Units / coordinate system \\
+    \midrule
+    Physical field & \fillin{Components, layout} & \fillin{Units} \\
+    Normalized field & \fillin{Transform} & \fillin{Dimensionless?} \\
+    Latent / bands & \fillin{Features, shapes} & \fillin{Interpretation} \\
+    Noise & \fillin{Distribution} & \fillin{Normalization} \\
+    Physical time & \fillin{Meaning} & \fillin{Units} \\
+    Generation time & \fillin{Meaning} & \fillin{Interval} \\
+    Predicted vector & \fillin{Derivative of what?} & \fillin{Units} \\
+    \bottomrule
+  \end{tabularx}
+\end{frame}
+
+\begin{frame}{Backup: dataset and normalization ledger}
+  \begin{itemize}
+    \item \fillin{Source paths; file variables; dimensions; coordinate conventions.}
+    \item \fillin{Boundary assumptions and evidence supporting them.}
+    \item \fillin{File ranges; deduplication; unique counts per split.}
+    \item \fillin{Correlation, stationarity, and regime coverage.}
+    \item \fillin{Velocity statistics: source population, estimator, sampling, formula.}
+    \item \fillin{Latent statistics: when fitted, population, and inverse transform.}
+    \item \fillin{Clipping, masks, missing values, units, or other preprocessing.}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Backup: exact encoder and decoder layers}
+  \scriptsize
+  \begin{tabularx}{\linewidth}{lXXXXX}
+    \toprule
+    Layer & Channels & Kernel / stride & Padding & Activation / norm & Output shape \\
+    \midrule
+    \fillin{Encoder 1} & \fillin{In/out} & \fillin{Values} & \fillin{Rule} & \fillin{Type} & \fillin{Shape} \\
+    \fillin{Encoder 2} & \fillin{In/out} & \fillin{Values} & \fillin{Rule} & \fillin{Type} & \fillin{Shape} \\
+    \fillin{Add rows} & \fillin{In/out} & \fillin{Values} & \fillin{Rule} & \fillin{Type} & \fillin{Shape} \\
+    \fillin{Latent head} & \fillin{In/out} & \fillin{Values} & \fillin{Rule} & \fillin{Type} & \fillin{Shape} \\
+    \fillin{Decoder 1} & \fillin{In/out} & \fillin{Values} & \fillin{Rule} & \fillin{Type} & \fillin{Shape} \\
+    \fillin{Add rows} & \fillin{In/out} & \fillin{Values} & \fillin{Rule} & \fillin{Type} & \fillin{Shape} \\
+    \fillin{Output head} & \fillin{In/out} & \fillin{Values} & \fillin{Rule} & \fillin{Type} & \fillin{Shape} \\
+    \bottomrule
+  \end{tabularx}
+  \medskip
+  \fillin{Deterministic versus variational representation; trainable parameter count; scalar compression ratio; output constraints.}
+\end{frame}
+
+\begin{frame}{Backup: tiles, halos, and spatial consistency}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \figureplaceholder{3.7cm}{Draw a core and halo in physical and latent coordinates. Show which values are retained or discarded.}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{itemize}
+        \item \fillin{Core, halo, alignment, receptive field.}
+        \item \fillin{Boundary wrapping and overlap handling.}
+        \item \fillin{Joint volume versus independent tiles.}
+        \item \fillin{Whole-volume equivalence tests and limitations.}
+        \item \fillin{CPU/GPU placement and disk-read strategy.}
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Backup: one transformer block, in order}
+  \small
+  \begin{enumerate}
+    \item \fillin{Input token layout and positional encoding.}
+    \item \fillin{Condition embedding, normalization, shifts, and scales.}
+    \item \fillin{Q/K/V maps, head reshape, and scale-specific weights.}
+    \item \fillin{Allowed attention pairs; exact softmax temperature / multiplier.}
+    \item \fillin{Value aggregation, output projection, gate, and residual update.}
+    \item \fillin{MLP widths, activation, normalization, gate, and residual update.}
+    \item \fillin{Final head, unpatchification, initialization, dropout.}
+  \end{enumerate}
+  \fillin{Explain why inaccessible information cannot leak through another operation.}
+\end{frame}
+
+\begin{frame}{Backup: derive the training path and loss}
+  \begin{block}{Path and endpoints}
+    \fillin{Write the path, its start/end values, and noise covariance at each scale.}
+  \end{block}
+  \begin{block}{Target derivative}
+    \fillin{Differentiate the path and identify exactly what the network predicts.}
+  \end{block}
+  \begin{block}{Sampling measure and loss}
+    \fillin{Distribution over times/scales/examples; sum versus mean; weighting and exposure frequency.}
+  \end{block}
+  \fillin{Is the prediction a conditional mean? What does that imply for generation?}
+\end{frame}
+
+\begin{frame}{Backup: sampling algorithm and numerical choices}
+  \begin{enumerate}
+    \item \fillin{Initialize random states; specify scale dependence.}
+    \item \fillin{Activate a scale; specify its initial amplitude and interval.}
+    \item \fillin{Write one solver update with predictor/corrector or other stages.}
+    \item \fillin{State which existing scales continue evolving.}
+    \item \fillin{Reconstruct, denormalize, decode, and restore physical units.}
+  \end{enumerate}
+  \medskip
+  \decision{Solver, steps, tolerances, precision.}{Accuracy/cost rationale and convergence test.}{Numerical bias and seed/device reproducibility.}
+\end{frame}
+
+\begin{frame}{Backup: optimization and checkpoint selection}
+  \small
+  \begin{tabularx}{\linewidth}{lXX}
+    \toprule
+    Setting & Representation training & Generative training \\
+    \midrule
+    Optimizer / schedule & \fillin{Settings} & \fillin{Settings} \\
+    Batch / accumulation & \fillin{Settings} & \fillin{Settings} \\
+    Updates / exposure & \fillin{Count and meaning} & \fillin{Count and meaning} \\
+    Precision / clipping & \fillin{Settings} & \fillin{Settings} \\
+    Validation population & \fillin{Sampling rule} & \fillin{Sampling rule} \\
+    Best-model criterion & \fillin{Metric} & \fillin{Metric} \\
+    Recovery state & \fillin{Saved state / cadence} & \fillin{Saved state / cadence} \\
+    \bottomrule
+  \end{tabularx}
+\end{frame}
+
+\begin{frame}{Backup: physical metrics must be precisely defined}
+  \small
+  \begin{tabularx}{\linewidth}{lXX}
+    \toprule
+    Diagnostic & Exact definition & Conventions / limitations \\
+    \midrule
+    Reconstruction error & \fillin{Formula, averaging} & \fillin{Units, normalization} \\
+    Kinetic energy & \fillin{Formula} & \fillin{Mean mode, density} \\
+    Spectrum & \fillin{FFT and shell rule} & \fillin{Wavenumbers, Parseval} \\
+    Velocity PDF & \fillin{Bins, normalization} & \fillin{Tails, component weighting} \\
+    Divergence & \fillin{Derivative operator} & \fillin{Boundaries, relative scale} \\
+    Additional statistics & \fillin{Formula} & \fillin{Why needed} \\
+    \bottomrule
+  \end{tabularx}
+  \medskip
+  \fillin{Sample counts, temporal dependence, uncertainty, and reference comparisons.}
+\end{frame}
+
+\begin{frame}{Backup: physical assumptions and unresolved claims}
+  \small
+  \begin{tabularx}{\linewidth}{XXX}
+    \toprule
+    Property & How addressed? & Evidence still needed \\
+    \midrule
+    Incompressibility & \fillin{Enforced / learned / unchecked} & \fillin{Test} \\
+    Periodicity / symmetries & \fillin{Where represented} & \fillin{Test} \\
+    Energy / scale statistics & \fillin{Loss or diagnostic} & \fillin{Test} \\
+    Temporal evolution & \fillin{Modeled or outside scope} & \fillin{Test} \\
+    Diversity / memorization & \fillin{Mechanism or diagnostic} & \fillin{Test} \\
+    Generalization & \fillin{Within/across regimes} & \fillin{Test} \\
+    \bottomrule
+  \end{tabularx}
+\end{frame}
+
+\begin{frame}{Backup: execution, verification, and reproducibility}
+  \begin{itemize}
+    \item \fillin{Host/GPU memory layout; largest tensors; measured peaks.}
+    \item \fillin{Attention chunking, checkpointing, tiling; mathematical effects.}
+    \item \fillin{GPU count and actual parallelism; measured stage throughput.}
+    \item \fillin{Synthetic versus real-data tests; tested shapes and update counts.}
+    \item \fillin{Failure injection, restart behavior, cache/source validation.}
+    \item \fillin{Code/config/data identifiers; seeds; environment; artifact locations.}
+    \item \fillin{Which results are execution checks versus scientific evidence.}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Backup: decision ledger and controlled next experiments}
+  \scriptsize
+  \begin{tabularx}{\linewidth}{XXXXX}
+    \toprule
+    Decision & Alternatives & Reason chosen & Expected drawback & Test that could change it \\
+    \midrule
+    \fillin{Compression} & \fillin{Options} & \fillin{Reason} & \fillin{Risk} & \fillin{Ablation} \\
+    \fillin{Attention} & \fillin{Options} & \fillin{Reason} & \fillin{Risk} & \fillin{Ablation} \\
+    \fillin{Path / solver} & \fillin{Options} & \fillin{Reason} & \fillin{Risk} & \fillin{Ablation} \\
+    \fillin{Loss} & \fillin{Options} & \fillin{Reason} & \fillin{Risk} & \fillin{Ablation} \\
+    \fillin{Data / budget} & \fillin{Options} & \fillin{Reason} & \fillin{Risk} & \fillin{Ablation} \\
+    \bottomrule
+  \end{tabularx}
+  \medskip
+  \fillin{For each ablation: hold other factors fixed, define success in advance, and record who approved the scientific choice.}
+\end{frame}
+
+\end{document}

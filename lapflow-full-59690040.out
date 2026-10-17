@@ -1,0 +1,24 @@
+[start] memory-check
+{
+  "autoencoder": {
+    "parameters": 119347,
+    "loss": 1.0001552104949951,
+    "seconds": 1.9137508979999893,
+    "device": "cuda:0",
+    "peak_allocated_gib": 0.11092424392700195,
+    "peak_reserved_gib": 0.119140625
+  },
+  "flow": {
+    "parameters": 12342144,
+    "loss": 11.119247436523438,
+    "seconds": 0.6079916869998669,
+    "device": "cuda:0",
+    "peak_allocated_gib": 0.246246337890625,
+    "peak_reserved_gib": 0.298828125
+  }
+}
+[done] memory-check
+[start] prepare
+{'train': 964, 'val': 361, 'test': 361}
+[done] prepare
+[start] autoencoder

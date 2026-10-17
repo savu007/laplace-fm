@@ -1,0 +1,11 @@
+{
+  "data_root": "/global/cfs/projectdirs/m5401/3D_HIT",
+  "grid": 384,
+  "channels": ["u", "v", "w"],
+  "splits": {"train": [131, 237], "val": [451, 490], "test": [492, 531]},
+  "seed": 2026,
+  "autoencoder": {"widths": [8, 16, 24, 32], "latent_channels": 8, "tile": 64, "halo": 32},
+  "model": {"width": 192, "depth": 6, "heads": 3, "patch": 2, "levels": 3, "query_chunk": 256, "checkpoint": true},
+  "flow": {"starts": [0.0, 0.3333333333333333, 0.6666666666666666], "steps_per_stage": 16},
+  "training": {"ae_steps": 10000, "flow_steps": 20000, "lr": 0.0001, "save_every": 250, "stats_crops": 128, "batch_size": 1, "amp": true, "validation_samples": 4}
+}
