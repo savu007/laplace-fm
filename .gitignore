@@ -11,3 +11,5 @@ logs/
 *.npz
 *.nc
 *.tmp
+*.err
+*.out
